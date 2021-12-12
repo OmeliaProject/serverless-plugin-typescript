@@ -36,6 +36,8 @@ declare namespace Serverless {
   interface Function {
     handler: string
     package: Serverless.Package
+    runtime?: string
+    typescript?: boolean
   }
 
   interface Package {

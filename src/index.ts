@@ -7,7 +7,7 @@ import * as typescript from './typescript'
 import { watchFiles } from './watchFiles'
 
 const SERVERLESS_FOLDER = '.serverless'
-const BUILD_FOLDER = '.build'
+const BUILD_FOLDER = 'build'
 
 export class TypeScriptPlugin {
   private originalServicePath: string
@@ -100,7 +100,14 @@ export class TypeScriptPlugin {
       }
     }
 
-    return service.functions
+    return Object.keys(service.functions)
+      .reduce((memo, k) => {
+        const usesNodeJsRuntime = service.functions[k].runtime?.startsWith('nodejs');
+        const usesTypescript = usesNodeJsRuntime !== false && service.functions[k].typescript !== false;
+        if (usesTypescript)
+          memo[k] = service.functions[k];
+        return memo;
+      }, {});
   }
 
   get rootFileNames() {
